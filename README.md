@@ -4,6 +4,34 @@
 
 [English guide](https://orkunisitmak.github.io/nashi-app/) · [Türkçe](https://orkunisitmak.github.io/nashi-app/tr/) · [Latest release](https://github.com/orkunisitmak/nashi-app/releases/latest) · [Security](SECURITY.md)
 
+## Fork notları: Windows testi (tuana0410)
+
+Bu fork'ta Nashi 0.7.17'yi Windows 11 x64'te kurup test ettim, bulduğum bir arayüz hatasını düzeltip ana projeye gönderdim: **[PR #819](https://github.com/orkunisitmak/nashi-app/pull/819)**.
+
+**Kurulum.** Portable ZIP'i doğrudan Masaüstü'ne çıkarınca dosyalar bir klasöre değil masaüstüne dağıldı, çünkü ZIP'in içinde üst klasör yok. Uygulama imzasız olduğu için SmartScreen uyarısı çıktı; "Ek bilgi → Yine de çalıştır" ile açıldı. İlk açılışta yalnızca Media tools (~180 MB) indirildi.
+
+| SmartScreen uyarısı | İlk kurulum ekranı |
+| :---: | :---: |
+| <img src="docs/fork-notes/01-smartscreen.png" width="380" alt="Windows SmartScreen warning for the unsigned app"> | <img src="docs/fork-notes/02-first-run-tools.png" width="380" alt="Nashi first-time setup with media and office tools"> |
+
+**Denenen özellikler.** Aynı fotoğrafla kırpma, PNG'ye dönüştürme ve üstüne çizim yaptım. Üçünde de asıl dosya korunup yeni bir kopya kaydedildi. Dönüştürmede "Preserve metadata" varsayılan olarak açık geliyor; telefon fotoğraflarında konum bilgisi de taşınabilir.
+
+| Crop | Convert | Annotate |
+| :---: | :---: | :---: |
+| <img src="docs/fork-notes/03-crop.png" width="260" alt="Crop editor with a 1:1 selection"> | <img src="docs/fork-notes/04-convert.png" width="260" alt="Convert to PNG with Preserve metadata checked"> | <img src="docs/fork-notes/05-annotate.png" width="260" alt="Annotate editor with a marker stroke"> |
+
+**Çıktı dosyaları.** Nashi'nin kaydettiği gerçek dosyalar. PNG'ye dönüştürülen kopya da aynı boyutta (1536×2048) çıktı; içinde konum gibi kişisel bir metadata yok, yalnızca yön bilgisi var.
+
+| Orijinal (JPEG) | Crop 1:1 | Annotate |
+| :---: | :---: | :---: |
+| <img src="docs/fork-notes/07-output-original.jpg" width="200" alt="Original photo: street lamp and three bare trees on a rainy evening"> | <img src="docs/fork-notes/08-output-crop.jpg" width="260" alt="Square crop of the same photo"> | <img src="docs/fork-notes/09-output-annotate.jpg" width="200" alt="Same photo with an orange marker smiley drawn on the road"> |
+
+**Bulduğum hata ve düzeltme.** Araç çarkında "ANNOTATE PHOTO" etiketi kelimenin ortasından bölünüyordu. `WheelPresentation.Caption`, tek bir kelime etiketten genişken de bir yazı boyutu/genişlik çiftini kabul ediyordu ve WPF kelimeyi harflerin arasından kırıyordu. Düzeltme her kelimenin sığdığı bir çift seçiyor; `--smoke-test-interactions` eski davranışta bu hatayı yakalıyor (33 kontrol, ANNOTATE PHOTO hatası), düzeltilmiş hâlde 34/34 geçiyor.
+
+<img src="docs/fork-notes/06-wheel-before-after.png" width="620" alt="Tool wheel before and after the fix: ANNOTAT / E PHOTO becomes ANNOTATE PHOTO">
+
+---
+
 Nashi is an independent, open-source file conversion and editing app inspired by [Tangerine](https://tangerineformac.com/)'s drag-and-wheel interaction. It adds public web-media downloads, QR reading, refined crop/annotation workflows, keyboard media editing, live progress and signed automatic updates. Nashi is not affiliated with Tangerine or LEAP STUDIO and includes no proprietary reference-app binaries or artwork.
 
 Try the [interactive browser playground](https://orkunisitmak.github.io/nashi-app/#playground): drag sample files, use the wheel and shortcuts, and explore all 27 tools. Supported image/PDF/audio exports are real; desktop-only operations are labeled previews.
